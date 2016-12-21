@@ -1,0 +1,121 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="dropdownslide-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]</h2>//{{sme}}//{{smer}}
+    <!--<vaadin-combo-box id="demo" label="Skill level" class="skillLevels" items="[[skillLevels]]"></vaadin-combo-box>-->
+    <!--<gl-combo-box id="demo" label="Skill level" class="skillLevels"item-label-path="name"
+                  item-value-path="symbol" items="[[newData]]" value="{{sme}}" on-value-changed="valueChanged"></gl-combo-box>
+    <gl-combo-box id="demo" label="Skill level" class="skillLevels"item-label-path="name"
+                  item-value-path="symbol" items="[[newData]]" value="{{smer}}" on-value-changed="valueChanged"></gl-combo-box>-->
+   <button type="button" name="button" on-tap="dele">dele</button>
+    <button type="button" name="button" on-tap="add">เพิ่ม</button>
+      <button type="button" name="button" on-tap="check">เช็ค</button>
+   <template is="dom-repeat" items={{sme}} as=item index-as=index>
+     <!--121-->
+     <gl-combo-box label="Skill level" class="skillLevels"item-label-path="name"
+                  item-value-path="symbol" items="[[newData]]" value="{{item.sme}}" on-value-changed="valueChanged"></gl-combo-box>
+    <button type="button" name="button" on-tap="deles" id="[[index]]">dele</button>
+   </template>
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'dropdownslide-app',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'dropdownslide-app',
+        },
+        sme:{
+          type: Array,
+          value:[{sme:''}]
+        },
+        test:{
+          type:Array,
+          value:[
+                  {name: 'Hydrogen', symbol: 'H', number: 1},
+                  {name: 'Helium', symbol: 'He', number: 2},
+                  {name: 'Lithium', symbol: 'Li', number: 3},
+                  {name: 'Beryllium', symbol: 'Be', number: 4}
+                ]
+        },
+        newData:{
+          type:Array,
+        },
+        arrForSlide:{
+          type:String
+        }
+      },
+      // ready:{
+      //   let elements = this.$$('#demo');
+      //   let confirm = new Array();
+      //   demo.skillLevels = [
+      //     'Beginner', 'Intermediate', 'Advanced', 'Professional', 'Native'
+      //   ];
+      // },
+      ready:function (confirmLetter) {
+        //insert confirm to combo box
+        this.newData = JSON.parse(JSON.stringify(this.test))
+        // let elements = this.$$('#demo');
+        // console.log(elements);
+        // elements.items = this.newData;
+      },
+      valueChanged:function(e){
+        if(e.detail.value != ''){
+          // console.log(e.detail.value);
+          this.arrForSlide = e.detail.value;
+          // this.test.map((el)=>{
+            // console.log(el);
+            // console.log(this.newData.filter((blDetail)=> blDetail.symbol == e.detail.value ));
+            let ar = this.newData.filter((blDetail)=> blDetail.symbol == e.detail.value );
+            console.log(ar[0]);
+            var index = this.newData.indexOf(ar[0]);
+            console.log(index);
+        }
+
+      },
+      dele:function(){
+          // console.log('index');
+          this.splice('newData', 0, 1);
+      },
+      deles:function (e) {
+        console.log(this.sme[e.currentTarget.id].sme);
+
+        let ar = this.test.filter((blDetail)=> blDetail.symbol == this.sme[e.currentTarget.id].sme );
+        console.log(ar[0]);
+        this.push('newData',ar[0]);
+        this.notifyPath('newData');
+        this.splice('sme',e.currentTarget.id, 1);
+        // console.log(this.sme[e.currentTarget.id]);
+        // console.log(this.);
+      },
+      check:function () {
+        console.log(this.sme);
+      },
+      add:function(){
+         console.log(this.arrForSlide);
+
+         let ar = this.newData.filter((blDetail)=> blDetail.symbol == this.arrForSlide );
+         var index = this.newData.indexOf(ar[0]);
+           this.splice('newData', index, 1);
+          // console.log(index);
+         this.push('sme', {sme:''});
+         this.notifyPath('sme');
+         console.log(this.sme);
+
+          // console.log('index');
+          // this.splice('newData', 0, 1);
+      },
+
+    });
+  </script>
+</dom-module>
