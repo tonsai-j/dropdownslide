@@ -8,19 +8,15 @@
       }
     </style>
     <h2>Hello [[prop1]]</h2>//{{sme}}//{{smer}}
-    <!--<vaadin-combo-box id="demo" label="Skill level" class="skillLevels" items="[[skillLevels]]"></vaadin-combo-box>-->
-    <!--<gl-combo-box id="demo" label="Skill level" class="skillLevels"item-label-path="name"
-                  item-value-path="symbol" items="[[newData]]" value="{{sme}}" on-value-changed="valueChanged"></gl-combo-box>
-    <gl-combo-box id="demo" label="Skill level" class="skillLevels"item-label-path="name"
-                  item-value-path="symbol" items="[[newData]]" value="{{smer}}" on-value-changed="valueChanged"></gl-combo-box>-->
-   <button type="button" name="button" on-tap="dele">dele</button>
+
     <button type="button" name="button" on-tap="add">เพิ่ม</button>
       <button type="button" name="button" on-tap="check">เช็ค</button>
-   <template is="dom-repeat" items={{sme}} as=item index-as=index>
+   <template is="dom-repeat" items={{sme}} as=item index-as=indexx>
      <!--121-->
-     <gl-combo-box label="Skill level" class="skillLevels"item-label-path="name"
-                  item-value-path="symbol" items="[[newData]]" value="{{item.sme}}" on-value-changed="valueChanged"></gl-combo-box>
-    <button type="button" name="button" on-tap="deles" id="[[index]]">dele</button>
+     [[indexx]]
+     <gl-combo-box id="drop-[[indexx]]" label="Skill level" item-label-path="name" item-value-path="symbol"
+       value="{{item.sme}}" on-value-changed="itemChanged"></gl-combo-box>
+     <button type="button" name="button" on-tap="deles" id="[[indexx]]">dele</button>
    </template>
 
   </template>
@@ -51,70 +47,57 @@
         newData:{
           type:Array,
         },
-        arrForSlide:{
-          type:String
-        }
       },
-      // ready:{
-      //   let elements = this.$$('#demo');
-      //   let confirm = new Array();
-      //   demo.skillLevels = [
-      //     'Beginner', 'Intermediate', 'Advanced', 'Professional', 'Native'
-      //   ];
-      // },
       ready:function (confirmLetter) {
         //insert confirm to combo box
-        this.newData = JSON.parse(JSON.stringify(this.test))
-        // let elements = this.$$('#demo');
-        // console.log(elements);
-        // elements.items = this.newData;
+        this.newData = JSON.parse(JSON.stringify(this.test));
       },
-      valueChanged:function(e){
-        if(e.detail.value != ''){
-          // console.log(e.detail.value);
-          this.arrForSlide = e.detail.value;
-          // this.test.map((el)=>{
-            // console.log(el);
-            // console.log(this.newData.filter((blDetail)=> blDetail.symbol == e.detail.value ));
-            let ar = this.newData.filter((blDetail)=> blDetail.symbol == e.detail.value );
-            console.log(ar[0]);
-            var index = this.newData.indexOf(ar[0]);
-            console.log(index);
-        }
-
-      },
-      dele:function(){
-          // console.log('index');
-          this.splice('newData', 0, 1);
+      attached: function() {
+        let    combobox = Polymer.dom(this.root).querySelector('#drop-0');
+        combobox.items = this.newData;
       },
       deles:function (e) {
-        console.log(this.sme[e.currentTarget.id].sme);
-
-        let ar = this.test.filter((blDetail)=> blDetail.symbol == this.sme[e.currentTarget.id].sme );
-        console.log(ar[0]);
-        this.push('newData',ar[0]);
-        this.notifyPath('newData');
         this.splice('sme',e.currentTarget.id, 1);
-        // console.log(this.sme[e.currentTarget.id]);
-        // console.log(this.);
+        this.cheageArray();
       },
       check:function () {
         console.log(this.sme);
+        console.log(this.newData);
+      },
+      itemChanged:function (e) {
+        // let index = this.sme.length-1;
+        this.cheageArray();
+
       },
       add:function(){
-         console.log(this.arrForSlide);
-
-         let ar = this.newData.filter((blDetail)=> blDetail.symbol == this.arrForSlide );
-         var index = this.newData.indexOf(ar[0]);
-           this.splice('newData', index, 1);
-          // console.log(index);
          this.push('sme', {sme:''});
          this.notifyPath('sme');
-         console.log(this.sme);
-
-          // console.log('index');
-          // this.splice('newData', 0, 1);
+        this.cheageArray();
       },
+      cheageArray:function () {
+        this.async(()=>{
+           let  comboboxs,arrForList,arrForItem,itemif;
+           for (var i = 0; i < this.sme.length; i++) {
+             arrForItem = JSON.parse(JSON.stringify(this.newData));
+            //  console.log('arrForItem',arrForItem);
+             this.sme.map((item,index)=>{
+              //  console.log(item);
+               if (i != index) {
+                 //ตัดอาเรย์ตอนที่ไม่เท่ากับค่าของตัวเอง
+                 if (arrForItem.filter((blDetail)=> blDetail.symbol == item.sme )[0] != undefined) {
+                   itemif = arrForItem.indexOf(arrForItem.filter((blDetail)=> blDetail.symbol == item.sme )[0]);
+                  //  console.log(itemif);
+                   arrForItem.splice(itemif, 1);
+                 }
+               }
+             });
+             comboboxs = Polymer.dom(this.root).querySelector('#drop-'+i);
+            //  console.log('combobox=>',comboboxs.value);
+            //  console.log(arrForItem);
+             comboboxs.items = arrForItem;
+           }
+        },1);
+      }
 
     });
   </script>
